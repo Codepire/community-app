@@ -7,15 +7,17 @@ module.exports.loginUser = async (req, res, next) => {
     //todo: add jwt
         if (req.method === "POST") {
             const { username, password } = req.body;
-            console.log(req.body.password)
+
             const user = await User.findOne({ username: username });
-            console.log(user.password)
+
             if (user && await bcrypt.compare(password, user.password)) {
                 let payload = {
                     id: user.id,
                     username: user.username,
                 };
-                let token = jwt.sign(payload, '36b7abb67d420eaaf3e526b0fe4d1b9b', { expiresIn: '24h' });
+
+                let token = jwt.sign(payload, process.env.JWT_SEED, { expiresIn: process.env.TOKEN_EXPIRATION_TIME });
+                
                 res.status(200).json({ "response": "logged in.", "token": token });
             } else {
                 res.status(401).json({ "response": "Unauthorized. (user does not exist with this username or worg password)!" })
