@@ -1,30 +1,42 @@
 const bcrypt = require("bcrypt");
 
-module.exports.loginUser = (req, res) => {
+const { User } = require("../models/user.model");
+
+module.exports.loginUser = async (req, res, next) => {
+    //todo: add jwt
     if (req.method === "POST") {
-        const {username, password} = req.body;
-        // todo: make login propper
-        if (username === "username" && password === "password") { // todo: use bcrypt to login user in database
-            res.status(200).json({"response": "Logged in"}); // todo: send jwt token to login user
+        const { username, password } = req.body;
+        const user = await User.findOne({ username: username });
+        if (user && await bcrypt.compare(password, user.password)) {
+            res.status(200).json({ "response": "logged in." });
         } else {
-            res.status(401).json({"response": "Unauthorized"})
+            res.status(401).json({ "response": "Unauthorized. (user does not exist with this username or worg password)!" })
         }
     }
 }
 
-module.exports.registerUser = (req, res, next) => {
+module.exports.registerUser = async (req, res, next) => {
     if (req.method === "POST") {
         const { username, email, password } = req.body;
-        if (password.length >= 8) {
-            bcrypt.hash("password", 10, (err, hash) => {
-                if (!err) {
-                    console.log(hash)
-                    // todo: add database and use username, email... redirect to login.
-                    res.status(200).json({"hash": hash})
-                }
-            })
+        const foundUser = await User.findOne({ "username": username });
+        if (foundUser) {
+            res.status(409).json({ "response": "duplication error (user already exist with this username)." });
         } else {
-            res.status(422).json({"response": "length error. (password length must be equals to or greater than 8)."})
+            if (password.length >= 8) {
+                bcrypt.hash("password", 10, (err, hash) => {
+                    if (!err) {
+                        const newUser = new User({
+                            username: username,
+                            email: email,
+                            password: hash
+                        });
+                        newUser.save();
+                        res.status(200).json({ "response": "registred successfully." });
+                    }
+                })
+            } else {
+                res.status(422).json({ "response": "length error. (password length must be equals to or greater than 8)." })
+            }
         }
     }
 }
