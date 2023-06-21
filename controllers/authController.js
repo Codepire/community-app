@@ -1,18 +1,29 @@
 const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
 const { User } = require("../models/user.model");
 
 module.exports.loginUser = async (req, res, next) => {
     //todo: add jwt
-    if (req.method === "POST") {
-        const { username, password } = req.body;
-        const user = await User.findOne({ username: username });
-        if (user && await bcrypt.compare(password, user.password)) {
-            res.status(200).json({ "response": "logged in." });
-        } else {
-            res.status(401).json({ "response": "Unauthorized. (user does not exist with this username or worg password)!" })
+        if (req.method === "POST") {
+            const { username, password } = req.body;
+
+            const user = await User.findOne({ username: username });
+
+            if (user && await bcrypt.compare(password, user.password)) {
+                let payload = {
+                    id: user.id,
+                    username: user.username,
+                };
+
+                let token = jwt.sign(payload, process.env.JWT_SEED, { expiresIn: process.env.TOKEN_EXPIRATION_TIME });
+                
+                res.status(200).json({ "response": "logged in.", "token": token });
+            } else {
+                res.status(401).json({ "response": "Unauthorized. (user does not exist with this username or worg password)!" })
+            }
         }
-    }
+
 }
 
 module.exports.registerUser = async (req, res, next) => {
@@ -23,7 +34,7 @@ module.exports.registerUser = async (req, res, next) => {
             res.status(409).json({ "response": "duplication error (user already exist with this username)." });
         } else {
             if (password.length >= 8) {
-                bcrypt.hash("password", 10, (err, hash) => {
+                bcrypt.hash(password, 10, (err, hash) => {
                     if (!err) {
                         const newUser = new User({
                             username: username,
