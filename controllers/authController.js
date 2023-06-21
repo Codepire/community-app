@@ -29,7 +29,6 @@ module.exports.loginUser = async (req, res, next) => {
 module.exports.registerUser = async (req, res, next) => {
     if (req.method === "POST") {
         const { username, email, password } = req.body;
-        console.log(req.body);
         const foundUser = await User.findOne({ "username": username });
         if (foundUser) {
             res.status(409).json({ "response": "duplication error (user already exist with this username)." });
