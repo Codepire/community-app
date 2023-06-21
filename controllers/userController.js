@@ -1,4 +1,3 @@
-const { verifyToken } = require("../middleware/authJwt");
 const { User } = require("../models/user.model");
 
 module.exports.userInfo = async (req, res, next) => {
