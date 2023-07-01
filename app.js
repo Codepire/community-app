@@ -12,6 +12,9 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
+const {connectDb} = require("./db");
+connectDb();
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -34,6 +37,6 @@ app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 
-io.listen(5000, () => {
+server.listen(5000, () => {
   console.log("app is running on port 5000");
 });
