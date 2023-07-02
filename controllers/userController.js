@@ -2,9 +2,7 @@ const { User } = require("../models/user.model");
 
 module.exports.userInfo = async (req, res) => {
   let user = req.user;
-  const userObj = await User.findOne({ username: user.username }).select(
-    "-password -__v"
-  );
+  const userObj = await User.findById(user.id).select("-password -__v");
   if (userObj) {
     res.status(200).json({ response: userObj });
   } else {
@@ -19,12 +17,11 @@ module.exports.editUser = async (req, res) => {
   const { password, ...updatedField } = req.body;
   const existingUser = await User.findOne({ username: updatedField.username });
   if (!existingUser) {
-    User.updateOne({ username: user.username }, { $set: updatedField }).then(
-      (response) => {
-        res.send(response);
-      }
-    );
+    await User.findByIdAndUpdate(user.id, { $set: updatedField });
+    res.status(200).json({ response: "Updated successfully." });
   } else {
-    res.status(409).json({ "response": "duplication error (user already exist with this username)." });
+    res.status(409).json({
+      response: "duplication error (user already exist with this username).",
+    });
   }
 };
