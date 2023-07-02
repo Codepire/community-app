@@ -1,4 +1,5 @@
-const { User } = require("../models/user.model");
+
+    const { User } = require("../models/user.model");
 
 module.exports.userInfo = async (req, res) => {
   let user = req.user;
@@ -25,3 +26,24 @@ module.exports.editUser = async (req, res) => {
     });
   }
 };
+
+
+module.exports.deleteUser = async (req, res) => {
+  const user = req.user;
+  const { password } = req.body;
+
+  console.log(user)
+
+  //finding if user exist or not
+  const foundUser = await User.findById(user.id);
+  if (!foundUser) {
+    // if not exist then return an error message 
+    return res.status(404).json({ success: false, message: "User not found!" });
+  }
+
+  // if found then delete the user and send response message
+  await foundUser.deleteOne();
+  return res.status(200).json({success:false,message:"User Deleted successfully"});
+
+};
+
