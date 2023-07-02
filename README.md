@@ -57,9 +57,8 @@ npm install
 - Add the following variables to the .env file:
 
 ```bash
-PORT=3000
-MONGODB_URI=<your_mongodb_uri>
-JWT_SECRET=<your_jwt_secret>
+JWT_SEED=aslkjfa;sldfjk
+TOKEN_EXPIRATION_TIME=1h
 ```
 
 **For Windows:**
