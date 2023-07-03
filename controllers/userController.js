@@ -25,3 +25,14 @@ module.exports.editUser = async (req, res) => {
     });
   }
 };
+
+module.exports.deleteUser = async (req, res) => {
+  try {
+    const user = req.user;
+    await User.findByIdAndDelete(user.id);
+    res.status(200).json({ response: "Deleted successfully." });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({ response: "An error occurred while deleting the user." });
+  }
+};
