@@ -12,7 +12,7 @@ const http = require("http");
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 
-const {connectDb} = require("./db");
+const { connectDb } = require("./db");
 connectDb();
 
 const io = new Server(server, {
@@ -32,10 +32,12 @@ io.on("connection", (socket) => {
 const indexRouter = require("./routes/indexRoute");
 const authRouter = require("./routes/authRoute");
 const userRouter = require("./routes/userRoute");
+const serverRouter = require("./routes/serverRoute");
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
+app.use("/server", serverRouter);
 
 server.listen(5000, () => {
   console.log("app is running on port 5000");
