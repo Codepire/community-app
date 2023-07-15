@@ -1,4 +1,5 @@
 const { serverModel } = require("../models/server.model");
+const mongoose = require("mongoose");
 
 module.exports.getServerInfo = async (req, res) => {
   try {
@@ -20,5 +21,19 @@ module.exports.createServer = async (req, res) => {
     res.status(200).json({ response: "server created." });
   } catch (err) {
     res.json(err);
+  }
+};
+
+module.exports.deleteServer = async (req, res) => {
+  const server = await serverModel.findById(req.params.serverId);
+  if (server) {
+    if (server.serverOwner.toString() === req.user.id) {
+      await serverModel.deleteOne({ _id: server.id });
+      res.json({ response: `server deleted: ${server.serverName}` });
+    } else {
+      res.json({ response: "You can not delete the server!" });
+    }
+  } else {
+    res.json({ response: "server does not exist!" });
   }
 };
