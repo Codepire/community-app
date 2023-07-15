@@ -1,5 +1,4 @@
 const { serverModel } = require("../models/server.model");
-const mongoose = require("mongoose");
 
 module.exports.getServerInfo = async (req, res) => {
   try {
