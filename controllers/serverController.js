@@ -36,3 +36,20 @@ module.exports.deleteServer = async (req, res) => {
     res.json({ response: "server does not exist!" });
   }
 };
+
+module.exports.editServer = async (req, res) => {
+  const server = await serverModel.findById(req.params.serverId);
+  if (server) {
+    if (server.serverOwner.toString() === req.user.id) {
+      await serverModel.updateOne(
+        { _id: req.params.serverId },
+        { $set: { serverName: req.body.serverName } }
+      );
+      res.json({ response: "server updated" });
+    } else {
+      res.json({ response: "You can not edit server." });
+    }
+  } else {
+    res.json({ response: "server does not exist!" });
+  }
+};
