@@ -2,8 +2,10 @@ require("dotenv").config();
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const logger = require("morgan");
 
 const app = express();
+app.use(logger("dev"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 
