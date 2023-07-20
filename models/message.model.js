@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const messageSchema = new mongoose.Schema({
-  message: String,
+  message: {
+    type: String,
+    required: [true, "You must provide message to create message."],
+  },
   createdAt: Date,
   author: {
     type: mongoose.Schema.Types.ObjectId,
@@ -10,6 +13,7 @@ const messageSchema = new mongoose.Schema({
   channel: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Channel",
+    required: [true, "You must provide channel in which message is created."],
   },
 });
 

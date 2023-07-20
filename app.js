@@ -36,12 +36,14 @@ const authRouter = require("./routes/authRoute");
 const userRouter = require("./routes/userRoute");
 const serverRouter = require("./routes/serverRoute");
 const channelRouter = require("./routes/channelRoute");
+const messageRouter = require("./routes/messageRoute");
 
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
 app.use("/server", serverRouter);
 app.use("/channels", channelRouter);
+app.use("/messages", messageRouter);
 
 server.listen(5000, () => {
   console.log("app is running on port 5000");
