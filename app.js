@@ -41,7 +41,7 @@ const messageRouter = require("./routes/messageRoute");
 app.use("/", indexRouter);
 app.use("/auth", authRouter);
 app.use("/users", userRouter);
-app.use("/server", serverRouter);
+app.use("/servers", serverRouter);
 app.use("/channels", channelRouter);
 app.use("/messages", messageRouter);
 

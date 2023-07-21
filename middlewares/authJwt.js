@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 //================================
 // Verify Token Middleware
@@ -10,22 +10,20 @@ const jwt = require('jsonwebtoken');
  * @param next - Continues with the execution if there are no errors
  */
 let verifyToken = (req, res, next) => {
-    try {
-        let token = req.get('Authorization');
-        jwt.verify( token, process.env.JWT_SEED, (err, decode) =>{
-            if (err) {
-                return res.status(401).json({response:err})
-            }
-            req.user = decode;
-            next();
-        }); 
-    } catch (error) {
-        res.status(500).json({ error: err.message });
-    }
-
+  try {
+    let token = req.get("Authorization");
+    jwt.verify(token, process.env.JWT_SEED, (err, decode) => {
+      if (err) {
+        return res.status(401).json({ response: err });
+      }
+      req.user = decode;
+      next();
+    });
+  } catch (error) {
+    res.status(500).json({ error: err.message });
+  }
 };
 
-
 module.exports = {
-    verifyToken,
-}
+  verifyToken,
+};
