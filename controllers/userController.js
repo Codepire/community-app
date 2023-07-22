@@ -1,4 +1,5 @@
 const { User } = require("../models/user.model");
+const { serverModel } = require("../models/server.model");
 
 module.exports.userInfo = async (req, res) => {
   let user = req.user;
@@ -36,5 +37,49 @@ module.exports.deleteUser = async (req, res) => {
     res
       .status(500)
       .json({ response: "An error occurred while deleting the user." });
+  }
+};
+
+module.exports.joinServer = async (req, res) => {
+  const user = await User.findById(req.user.id);
+  const server = await serverModel.findById(req.body.serverId);
+
+  if (
+    user.joinedServers.includes(server.id) &&
+    server.members.includes(user.id)
+  ) {
+    res.json({ response: "You have already joined this server!" });
+  } else {
+    user.joinedServers.push(server.id);
+    await user.save();
+
+    server.members.push(user.id);
+    await server.save();
+
+    res.json({ response: "Server joined." });
+  }
+};
+
+module.exports.leaveServer = async (req, res) => {
+  const user = await User.findById(req.user.id);
+  const server = await serverModel.findById(req.body.serverId);
+
+  if (
+    user.joinedServers.includes(server.id) ||
+    server.members.includes(user.id)
+  ) {
+    await user.updateOne({
+      $pull: { joinedServers: server.id },
+    });
+
+    await server.updateOne({
+      $pull: { members: user.id },
+    });
+
+    res.json({ response: "Server left successfully." });
+  } else {
+    res.json({
+      response: "You haven't joined server yet. you cant leave it bruh.",
+    });
   }
 };
