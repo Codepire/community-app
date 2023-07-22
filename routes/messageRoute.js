@@ -2,13 +2,12 @@ const router = require("express").Router();
 
 const {
   createMessage,
-  getMessages
+  getMessages,
 } = require("../controllers/messageController");
 const { verifyToken } = require("../middlewares/authJwt");
 
 router.use(verifyToken);
 
-router.route("/:channelId").get(getMessages);
-router.route("/").post(createMessage);
+router.route("/").get(getMessages).post(createMessage);
 
 module.exports = router;

@@ -31,7 +31,7 @@ module.exports.createMessage = async (req, res) => {
 
 module.exports.getMessages = async (req, res) => {
   try {
-    const { channelId } = req.params;
+    const { channelId } = req.body;
     const messages = await Message.find({ channel: channelId });
     res.status(200).json({ response: messages });
   } catch (err) {
