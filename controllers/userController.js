@@ -42,7 +42,7 @@ module.exports.deleteUser = async (req, res) => {
 
 module.exports.joinServer = async (req, res) => {
   const user = await User.findById(req.user.id);
-  const server = await serverModel.findById(req.body.serverId);
+  const server = await serverModel.findById(req.params.serverId);
 
   if (
     user.joinedServers.includes(server.id) &&
@@ -62,7 +62,7 @@ module.exports.joinServer = async (req, res) => {
 
 module.exports.leaveServer = async (req, res) => {
   const user = await User.findById(req.user.id);
-  const server = await serverModel.findById(req.body.serverId);
+  const server = await serverModel.findById(req.params.serverId);
 
   if (
     user.joinedServers.includes(server.id) ||
