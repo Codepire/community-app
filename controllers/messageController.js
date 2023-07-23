@@ -17,7 +17,7 @@ module.exports.createMessage = async (req, res) => {
       channel.messages.push(newMsg._id);
       await channel.save();
 
-      res.status(200).json({ response: "Message created" });
+      res.status(201).json({ response: "Message created" });
     } else {
       res.json({ response: "Channel does not exist" });
     }

@@ -17,7 +17,7 @@ module.exports.createServer = async (req, res) => {
       serverOwner: req.user.id,
       createdAt: new Date().getDate(),
     }).save();
-    res.status(200).json({ response: "server created." });
+    res.status(201).json({ response: "server created." });
   } catch (err) {
     res.json(err);
   }
@@ -28,12 +28,14 @@ module.exports.deleteServer = async (req, res) => {
   if (server) {
     if (server.serverOwner.toString() === req.user.id) {
       await serverModel.deleteOne({ _id: server.id });
-      res.json({ response: `server deleted: ${server.serverName}` });
+      res
+        .status(204)
+        .json({ response: `server deleted: ${server.serverName}` });
     } else {
-      res.json({ response: "You can not delete the server!" });
+      res.status(401).json({ response: "You can not delete the server!" });
     }
   } else {
-    res.json({ response: "server does not exist!" });
+    res.status(404).json({ response: "server does not exist!" });
   }
 };
 
@@ -45,9 +47,9 @@ module.exports.editServer = async (req, res) => {
         { _id: req.params.serverId },
         { $set: { serverName: req.body.serverName } }
       );
-      res.json({ response: "server updated" });
+      res.status(200).json({ response: "server updated" });
     } else {
-      res.json({ response: "You can not edit server." });
+      res.status(401).json({ response: "You can not edit server." });
     }
   } else {
     res.json({ response: "server does not exist!" });

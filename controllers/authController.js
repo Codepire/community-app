@@ -39,7 +39,7 @@ module.exports.registerUser = async (req, res) => {
             password: hash,
           });
           newUser.save();
-          res.status(200).json({ response: "registred successfully." });
+          res.status(201).json({ response: "registred successfully." });
         }
       });
     } else {

@@ -31,12 +31,12 @@ module.exports.deleteUser = async (req, res) => {
   try {
     const user = req.user;
     await User.findByIdAndDelete(user.id);
-    res.status(200).json({ response: "Deleted successfully." });
-  } catch (error) {
-    console.error("Error deleting user:", error);
-    res
-      .status(500)
-      .json({ response: "An error occurred while deleting the user." });
+    res.status(204).json({ response: "Deleted successfully." });
+  } catch (err) {
+    res.status(500).json({
+      response: "An error occurred while deleting the user.",
+      err: err,
+    });
   }
 };
 
@@ -56,7 +56,7 @@ module.exports.joinServer = async (req, res) => {
     server.members.push(user.id);
     await server.save();
 
-    res.json({ response: "Server joined." });
+    res.status(201).json({ response: "Server joined." });
   }
 };
 
@@ -76,9 +76,9 @@ module.exports.leaveServer = async (req, res) => {
       $pull: { members: user.id },
     });
 
-    res.json({ response: "Server left successfully." });
+    res.status(204).json({ response: "Server left successfully." });
   } else {
-    res.json({
+    res.status(404).json({
       response: "You haven't joined server yet. you cant leave it bruh.",
     });
   }
@@ -89,5 +89,5 @@ module.exports.getJoinedServers = async (req, res) => {
   const joinedServers = servers.filter((server) => {
     return server.members.includes(req.user.id);
   });
-  res.json({ joinedServers });
+  res.status(200).json({ joinedServers });
 };

@@ -1,3 +1,3 @@
 module.exports.indexPage = (req, res) => {
-    res.send("hello world");
-}
+  res.send("hello world");
+};

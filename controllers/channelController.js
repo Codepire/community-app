@@ -23,16 +23,17 @@ module.exports.createChannel = async (req, res) => {
         parentServer: parentServerId,
       });
       await newChannel.save();
-      res.status(200).json({ response: "Channel created successfully." });
+      res.status(201).json({ response: "Channel created successfully." });
     } catch (err) {
-      res
-        .status(500)
-        .json({ error: "An error occurred while creating the channel." });
+      res.status(500).json({
+        response: "An error occurred while creating the channel.",
+        err: err,
+      });
     }
   } else {
     res
       .status(401)
-      .json({ response: "Only server leader can create channel in server" });
+      .json({ response: "Only server owner can create channel in server" });
   }
 };
 
@@ -69,7 +70,7 @@ module.exports.deleteChannel = async (req, res) => {
     if (parentServer.serverOwner.toString() === req.user.id) {
       try {
         await channel.deleteOne();
-        res.status(200).json({ response: "Channel deleted successfully" });
+        res.status(204).json({ response: "Channel deleted successfully" });
       } catch (err) {
         res.json({
           response: "Some error occured while deleting channel!",
@@ -78,7 +79,7 @@ module.exports.deleteChannel = async (req, res) => {
       }
     } else {
       res
-        .status(402)
+        .status(401)
         .json({ response: "Only server owner can delete channel." });
     }
   } else {
