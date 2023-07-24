@@ -28,9 +28,7 @@ module.exports.deleteServer = async (req, res) => {
   if (server) {
     if (server.serverOwner.toString() === req.user.id) {
       await serverModel.deleteOne({ _id: server.id });
-      res
-        .status(204)
-        .json({ response: `server deleted: ${server.serverName}` });
+      res.sendStatus(204);
     } else {
       res.status(401).json({ response: "You can not delete the server!" });
     }

@@ -31,7 +31,7 @@ module.exports.deleteUser = async (req, res) => {
   try {
     const user = req.user;
     await User.findByIdAndDelete(user.id);
-    res.status(204).json({ response: "Deleted successfully." });
+    res.sendStatus(204);
   } catch (err) {
     res.status(500).json({
       response: "An error occurred while deleting the user.",
@@ -76,7 +76,7 @@ module.exports.leaveServer = async (req, res) => {
       $pull: { members: user.id },
     });
 
-    res.status(204).json({ response: "Server left successfully." });
+    res.sendStatus(204);
   } else {
     res.status(404).json({
       response: "You haven't joined server yet. you cant leave it bruh.",
