@@ -9,3 +9,4 @@ test/*.log
 *.env.example
 *.env.local
 *.env.staging
+note.txt

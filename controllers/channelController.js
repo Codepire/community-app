@@ -2,7 +2,9 @@ const { Channel } = require("../models/channel.model");
 const { serverModel } = require("../models/server.model");
 
 module.exports.getChannels = async (req, res) => {
-  const channels = await Channel.find({ parentServer: req.body.parentServer });
+  const channels = await Channel.find({
+    parentServer: req.params.parentServer,
+  });
   if (channels.length !== 0) {
     res.status(200).json(channels);
   } else {
