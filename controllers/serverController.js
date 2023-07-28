@@ -1,4 +1,5 @@
 const { serverModel } = require("../models/server.model");
+const { User } = require("../models/user.model");
 
 module.exports.getServerInfo = async (req, res) => {
   try {
@@ -12,14 +13,25 @@ module.exports.getServerInfo = async (req, res) => {
 module.exports.createServer = async (req, res) => {
   const { serverName } = req.body;
   try {
-    await new serverModel({
+    // creating new server
+    const newServer = await new serverModel({
       serverName: serverName,
       serverOwner: req.user.id,
       createdAt: new Date().getDate(),
-    }).save();
+      members: req.user.id,
+    });
+    newServer.save();
+
+    // updating user fields
+    await User.findByIdAndUpdate(req.user.id, {
+      $set: { joinedServers: newServer.id, createdServers: newServer.id },
+    });
     res.status(201).json({ response: "server created." });
   } catch (err) {
-    res.json(err);
+    res.json({
+      response: "Some error occured while creating server.",
+      err: err,
+    });
   }
 };
 
