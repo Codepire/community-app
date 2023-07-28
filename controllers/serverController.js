@@ -20,7 +20,7 @@ module.exports.createServer = async (req, res) => {
       createdAt: new Date().getDate(),
       members: req.user.id,
     });
-    newServer.save();
+    await newServer.save();
 
     // updating user fields
     await User.findByIdAndUpdate(req.user.id, {
@@ -29,7 +29,7 @@ module.exports.createServer = async (req, res) => {
     res.status(201).json({ response: "server created." });
   } catch (err) {
     res.json({
-      response: "Some error occured while creating server.",
+      response: "Some error occurred while creating server.",
       err: err,
     });
   }

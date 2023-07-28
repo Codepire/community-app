@@ -1,7 +1,10 @@
 const mongoose = require("mongoose");
 
 const serverSchema = new mongoose.Schema({
-  serverName: String,
+  serverName: {
+    type: String,
+    required: true
+  },
   serverOwner: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
