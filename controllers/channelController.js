@@ -3,7 +3,7 @@ const { serverModel } = require("../models/server.model");
 
 module.exports.getChannels = async (req, res) => {
   const channels = await Channel.find({
-    parentServer: req.params.parentServer,
+    parentServerId: req.params.parentServerId,
   });
   if (channels.length !== 0) {
     res.status(200).json(channels);
@@ -16,13 +16,13 @@ module.exports.getChannels = async (req, res) => {
 };
 
 module.exports.createChannel = async (req, res) => {
-  const { channelName, parentServer: parentServerId } = req.body;
+  const { channelName, parentServerId } = req.body;
   const parentServer = await serverModel.findById(parentServerId);
-  if (parentServer.serverOwner.toString() === req.user.id) {
+  if (parentServer.serverOwnerId.toString() === req.user.id) {
     try {
       const newChannel = new Channel({
         channelName: channelName,
-        parentServer: parentServerId,
+        parentServerId: parentServerId,
       });
       await newChannel.save();
       res.status(201).json({ response: "Channel created successfully." });
@@ -42,8 +42,8 @@ module.exports.createChannel = async (req, res) => {
 module.exports.editChannel = async (req, res) => {
   const channel = await Channel.findById(req.body.channelId);
   if (channel) {
-    const parentServer = await serverModel.findById(channel.parentServer);
-    if (parentServer.serverOwner.toString() === req.user.id) {
+    const parentServer = await serverModel.findById(channel.parentServerId);
+    if (parentServer.serverOwnerId.toString() === req.user.id) {
       try {
         await channel.updateOne({
           $set: { channelName: req.body.channelName },
@@ -51,7 +51,7 @@ module.exports.editChannel = async (req, res) => {
         res.status(200).json({ response: "channel edited" });
       } catch (err) {
         res.json({
-          response: "Some error occured while updating channel",
+          response: "Some error occurred while updating channel",
           err: err,
         });
       }
@@ -68,14 +68,14 @@ module.exports.editChannel = async (req, res) => {
 module.exports.deleteChannel = async (req, res) => {
   const channel = await Channel.findById(req.body.channelId);
   if (channel) {
-    const parentServer = await serverModel.findById(channel.parentServer);
-    if (parentServer.serverOwner.toString() === req.user.id) {
+    const parentServer = await serverModel.findById(channel.parentServerId);
+    if (parentServer.serverOwnerId.toString() === req.user.id) {
       try {
         await channel.deleteOne();
         res.status(204).json({ response: "Channel deleted successfully" });
       } catch (err) {
         res.json({
-          response: "Some error occured while deleting channel!",
+          response: "Some error occurred while deleting channel!",
           err: err,
         });
       }

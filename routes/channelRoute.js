@@ -11,5 +11,5 @@ const { verifyToken } = require("../middlewares/authJwt");
 router.use(verifyToken);
 
 router.route("/").post(createChannel).patch(editChannel).delete(deleteChannel);
-router.route("/:parentServer").get(getChannels);
+router.route("/:parentServerId").get(getChannels);
 module.exports = router;

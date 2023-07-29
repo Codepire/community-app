@@ -5,11 +5,11 @@ const channelSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  parentServer: {
+  parentServerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ServerModel",
   },
-  messages: [
+  messagesId: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message",
@@ -20,6 +20,5 @@ const channelSchema = new mongoose.Schema({
 const Channel = mongoose.model("Channel", channelSchema);
 
 module.exports = {
-  channelSchema,
   Channel,
 };

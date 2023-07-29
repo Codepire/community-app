@@ -16,15 +16,15 @@ module.exports.createServer = async (req, res) => {
     // creating new server
     const newServer = await new serverModel({
       serverName: serverName,
-      serverOwner: req.user.id,
+      serverOwnerId: req.user.id,
       createdAt: new Date().getDate(),
-      members: req.user.id,
+      membersId: req.user.id,
     });
     await newServer.save();
 
     // updating user fields
     await User.findByIdAndUpdate(req.user.id, {
-      $set: { joinedServers: newServer.id, createdServers: newServer.id },
+      $set: { joinedServersId: newServer.id, createdServersId: newServer.id },
     });
     res.status(201).json({ response: "server created." });
   } catch (err) {
@@ -38,7 +38,7 @@ module.exports.createServer = async (req, res) => {
 module.exports.deleteServer = async (req, res) => {
   const server = await serverModel.findById(req.params.serverId);
   if (server) {
-    if (server.serverOwner.toString() === req.user.id) {
+    if (server.serverOwnerId.toString() === req.user.id) {
       await serverModel.deleteOne({ _id: server.id });
       res.sendStatus(204);
     } else {
@@ -52,7 +52,7 @@ module.exports.deleteServer = async (req, res) => {
 module.exports.editServer = async (req, res) => {
   const server = await serverModel.findById(req.params.serverId);
   if (server) {
-    if (server.serverOwner.toString() === req.user.id) {
+    if (server.serverOwnerId.toString() === req.user.id) {
       await serverModel.updateOne(
         { _id: req.params.serverId },
         { $set: { serverName: req.body.serverName } }

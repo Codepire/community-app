@@ -5,18 +5,18 @@ const serverSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  serverOwner: {
+  serverOwnerId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
   createdAt: Date,
-  members: [
+  membersId: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
   ],
-  channels: [
+  channelsId: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Channel",
@@ -27,6 +27,5 @@ const serverSchema = new mongoose.Schema({
 const serverModel = mongoose.model("Server", serverSchema);
 
 module.exports = {
-  serverSchema,
   serverModel,
 };

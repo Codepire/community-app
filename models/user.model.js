@@ -15,13 +15,13 @@ const userSchema = new mongoose.Schema({
     minLength: 8,
     required: true,
   },
-  joinedServers: [
+  joinedServersId: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ServerModel",
     },
   ],
-  createdServers: [
+  createdServersId: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ServerModel",
@@ -32,6 +32,5 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model("User", userSchema);
 
 module.exports = {
-  userSchema,
   User,
 };

@@ -6,11 +6,11 @@ const messageSchema = new mongoose.Schema({
     required: [true, "You must provide message to create message."],
   },
   createdAt: Date,
-  author: {
+  authorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  channel: {
+  channelId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Channel",
     required: [true, "You must provide channel in which message is created."],
@@ -20,6 +20,5 @@ const messageSchema = new mongoose.Schema({
 const Message = mongoose.model("Message", messageSchema);
 
 module.exports = {
-  messageSchema,
   Message,
 };

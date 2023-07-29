@@ -9,12 +9,12 @@ module.exports.createMessage = async (req, res) => {
       const newMsg = new Message({
         message: message,
         createdAt: new Date().getDate(),
-        author: req.user.id,
-        channel: channelId,
+        authorId: req.user.id,
+        channelId: channelId,
       });
       await newMsg.save();
 
-      channel.messages.push(newMsg._id);
+      channel.messagesId.push(newMsg._id);
       await channel.save();
 
       res.status(201).json({ response: "Message created" });
@@ -23,7 +23,7 @@ module.exports.createMessage = async (req, res) => {
     }
   } catch (err) {
     res.json({
-      response: "Some error occured while creating message",
+      response: "Some error occurred while creating message",
       err: err,
     });
   }
@@ -32,11 +32,11 @@ module.exports.createMessage = async (req, res) => {
 module.exports.getMessages = async (req, res) => {
   try {
     const { channelId } = req.params;
-    const messages = await Message.find({ channel: channelId });
+    const messages = await Message.find({ channelId: channelId });
     res.status(200).json({ response: messages });
   } catch (err) {
     res.send({
-      response: "Some error occured while retriving messages.",
+      response: "Some error occurred while retriving messages.",
       err: err,
     });
   }
