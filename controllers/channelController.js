@@ -46,7 +46,7 @@ module.exports.createChannel = async (req, res) => {
 };
 
 module.exports.editChannel = async (req, res) => {
-  const channel = await Channel.findById(req.body.channelId);
+  const channel = await Channel.findById(req.params.channelId);
   if (channel) {
     const parentServer = await serverModel.findById(channel.parentServerId);
     if (parentServer.serverOwnerId.toString() === req.user.id) {
@@ -72,7 +72,7 @@ module.exports.editChannel = async (req, res) => {
 };
 
 module.exports.deleteChannel = async (req, res) => {
-  const channel = await Channel.findById(req.body.channelId);
+  const channel = await Channel.findById(req.params.channelId);
   if (channel) {
     const parentServer = await serverModel.findById(channel.parentServerId);
     if (parentServer.serverOwnerId.toString() === req.user.id) {
