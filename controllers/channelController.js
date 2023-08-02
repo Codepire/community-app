@@ -77,6 +77,9 @@ module.exports.deleteChannel = async (req, res) => {
     const parentServer = await serverModel.findById(channel.parentServerId);
     if (parentServer.serverOwnerId.toString() === req.user.id) {
       try {
+        await parentServer.updateOne({
+          $pull: {channelsId: channel._id}
+        })
         await channel.deleteOne();
         res.status(204).json({ response: "Channel deleted successfully" });
       } catch (err) {
