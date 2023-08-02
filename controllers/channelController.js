@@ -20,11 +20,17 @@ module.exports.createChannel = async (req, res) => {
   const parentServer = await serverModel.findById(parentServerId);
   if (parentServer.serverOwnerId.toString() === req.user.id) {
     try {
+      // creating new channel
       const newChannel = new Channel({
         channelName: channelName,
         parentServerId: parentServerId,
       });
       await newChannel.save();
+``
+      // updating server field
+      parentServer.channelsId.push(newChannel._id);
+      await parentServer.save()
+
       res.status(201).json({ response: "Channel created successfully." });
     } catch (err) {
       res.status(500).json({
