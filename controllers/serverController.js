@@ -1,5 +1,6 @@
 const { serverModel } = require("../models/server.model");
 const { User } = require("../models/user.model");
+const { Channel } = require("../models/channel.model");
 
 module.exports.getServerInfo = async (req, res) => {
   try {
@@ -39,6 +40,13 @@ module.exports.deleteServer = async (req, res) => {
   const server = await serverModel.findById(req.params.serverId);
   if (server) {
     if (server.serverOwnerId.toString() === req.user.id) {
+      // remove deleted servers from joined servers in user
+      await User.updateMany({joinedServersId: server._id}, {$pull: {joinedServersId: server._id}})
+      // delete all channels of this server
+      await Channel.deleteMany({ parentServerId: server._id })
+      // remove created server from server owner
+      await User.findByIdAndUpdate(req.user.id, {$pull: {createdServersId: server._id}})
+      // delete server
       await serverModel.deleteOne({ _id: server._id });
       res.sendStatus(204);
     } else {
