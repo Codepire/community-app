@@ -24,7 +24,7 @@ module.exports.createServer = async (req, res) => {
 
     // updating user fields
     await User.findByIdAndUpdate(req.user.id, {
-      $set: { joinedServersId: newServer.id, createdServersId: newServer.id },
+      $set: { joinedServersId: newServer._id, createdServersId: newServer._id },
     });
     res.status(201).json({ response: "server created." });
   } catch (err) {
@@ -39,7 +39,7 @@ module.exports.deleteServer = async (req, res) => {
   const server = await serverModel.findById(req.params.serverId);
   if (server) {
     if (server.serverOwnerId.toString() === req.user.id) {
-      await serverModel.deleteOne({ _id: server.id });
+      await serverModel.deleteOne({ _id: server._id });
       res.sendStatus(204);
     } else {
       res.status(401).json({ response: "You can not delete the server!" });

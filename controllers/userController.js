@@ -45,15 +45,15 @@ module.exports.joinServer = async (req, res) => {
   const server = await serverModel.findById(req.params.serverId);
 
   if (
-    user.joinedServersId.includes(server.id) &&
-    server.membersId.includes(user.id)
+    user.joinedServersId.includes(server._id) &&
+    server.membersId.includes(user._id)
   ) {
     res.json({ response: "You have already joined this server!" });
   } else {
-    user.joinedServersId.push(server.id);
+    user.joinedServersId.push(server._id);
     await user.save();
 
-    server.membersId.push(user.id);
+    server.membersId.push(user._id);
     await server.save();
 
     res.status(201).json({ response: "Server joined." });
@@ -69,15 +69,15 @@ module.exports.leaveServer = async (req, res) => {
       .json({ response: "You can not leave server as you are owner." });
   } else {
     if (
-      user.joinedServersId.includes(server.id) ||
-      server.membersId.includes(user.id)
+      user.joinedServersId.includes(server._id) ||
+      server.membersId.includes(user._id)
     ) {
       await user.updateOne({
-        $pull: { joinedServersId: server.id },
+        $pull: { joinedServersId: server._id },
       });
 
       await server.updateOne({
-        $pull: { membersId: user.id },
+        $pull: { membersId: user._id },
       });
 
       res.sendStatus(204);
