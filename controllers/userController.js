@@ -90,6 +90,6 @@ module.exports.leaveServer = async (req, res) => {
 };
 
 module.exports.getJoinedServers = async (req, res) => {
-  const joinedServers = await serverModel.find({membersId: req.user.id});
+  const joinedServers = await serverModel.find({ membersId: req.user.id });
   res.status(200).json({ joinedServers });
 };

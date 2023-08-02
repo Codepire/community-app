@@ -8,7 +8,7 @@ const { verifyToken } = require("../middlewares/authJwt");
 
 router.use(verifyToken);
 
-router.route("/:channelId").get(getMessages)
+router.route("/:channelId").get(getMessages);
 router.route("/").post(createMessage);
 
 module.exports = router;

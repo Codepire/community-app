@@ -41,11 +41,16 @@ module.exports.deleteServer = async (req, res) => {
   if (server) {
     if (server.serverOwnerId.toString() === req.user.id) {
       // remove deleted servers from joined servers in user
-      await User.updateMany({joinedServersId: server._id}, {$pull: {joinedServersId: server._id}})
+      await User.updateMany(
+        { joinedServersId: server._id },
+        { $pull: { joinedServersId: server._id } }
+      );
       // delete all channels of this server
-      await Channel.deleteMany({ parentServerId: server._id })
+      await Channel.deleteMany({ parentServerId: server._id });
       // remove created server from server owner
-      await User.findByIdAndUpdate(req.user.id, {$pull: {createdServersId: server._id}})
+      await User.findByIdAndUpdate(req.user.id, {
+        $pull: { createdServersId: server._id },
+      });
       // delete server
       await serverModel.deleteOne({ _id: server._id });
       res.sendStatus(204);

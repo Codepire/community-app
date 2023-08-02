@@ -26,10 +26,10 @@ module.exports.createChannel = async (req, res) => {
         parentServerId: parentServerId,
       });
       await newChannel.save();
-``
+      
       // updating server field
       parentServer.channelsId.push(newChannel._id);
-      await parentServer.save()
+      await parentServer.save();
 
       res.status(201).json({ response: "Channel created successfully." });
     } catch (err) {
@@ -78,8 +78,8 @@ module.exports.deleteChannel = async (req, res) => {
     if (parentServer.serverOwnerId.toString() === req.user.id) {
       try {
         await parentServer.updateOne({
-          $pull: {channelsId: channel._id}
-        })
+          $pull: { channelsId: channel._id },
+        });
         await channel.deleteOne();
         res.status(204).json({ response: "Channel deleted successfully" });
       } catch (err) {
