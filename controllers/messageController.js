@@ -1,6 +1,7 @@
 const { Message } = require("../models/message.model");
 const { Channel } = require("../models/channel.model");
 const { default: mongoose } = require("mongoose");
+const { verifyTokenIO } = require("../lib/authJwt.socket");
 
 module.exports.getMessages = async (req, res) => {
   try {
@@ -15,40 +16,43 @@ module.exports.getMessages = async (req, res) => {
   }
 };
 
-module.exports.createMessage = async (req, res) => {
-  const { message, channelId } = req.body;
+module.exports.createMessage = async (messageData) => {
+  const { message, channelId, jwtToken } = messageData;
 
   const session = await mongoose.startSession();
-  session.startTransaction();
-
   try {
+    session.startTransaction();
+
     const channel = await Channel.findById(channelId).session(session);
-    if (!channel) {
-      await session.abortTransaction();
-      session.endSession();
-      return res.status(404).json({ response: "Channel does not exist" });
+
+    if (channel && message) {
+      const decode = await verifyTokenIO(jwtToken);
+      if (decode) {
+        const newMessage = new Message({
+          message: message,
+          createdAt: new Date().getDate(),
+          authorId: decode.id,
+          channelId: channelId,
+        });
+
+        await newMessage.save({ session: session });
+
+        channel.messagesId.push(newMessage._id);
+        await channel.save({ session: session });
+
+        await session.commitTransaction();
+      } else {
+        throw new Error(
+          "You are not authorized, please first Register or Login!"
+        );
+      }
+    } else {
+      throw new Error("Channel or Message undefined!");
     }
-
-    const newMsg = new Message({
-      message: message,
-      createdAt: new Date().getDate(),
-      authorId: req.user.id,
-      channelId: channelId,
-    });
-    await newMsg.save({ session: session });
-
-    channel.messagesId.push(newMsg._id);
-    await channel.save({ session: session });
-
-    await session.commitTransaction();
-    res.status(201).json({ response: "Message created" });
   } catch (err) {
     await session.abortTransaction();
-    res.json({
-      response: "Some error occurred while creating message",
-      err: err,
-    });
   } finally {
     session.endSession();
+    console.log("done.");
   }
 };

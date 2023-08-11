@@ -17,6 +17,8 @@ const { Server } = require("socket.io");
 const { connectDb } = require("./db");
 connectDb();
 
+const { createMessage } = require("./controllers/messageController");
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:3000",
@@ -26,8 +28,13 @@ const io = new Server(server, {
 io.on("connection", (socket) => {
   console.log("user connected");
 
-  socket.on("msg", (msg) => {
-    console.log(msg);
+  socket.on("send_message", async (messageData) => {
+    await createMessage(messageData);
+    socket.emit("message_created");
+  });
+
+  socket.on("disconnect", () => {
+    console.log("A user disconnected");
   });
 });
 

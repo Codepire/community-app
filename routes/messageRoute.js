@@ -1,7 +1,7 @@
 const router = require("express").Router();
 
 const {
-  createMessage,
+  // createMessage,
   getMessages,
 } = require("../controllers/messageController");
 const { verifyToken } = require("../middlewares/authJwt");
@@ -9,6 +9,6 @@ const { verifyToken } = require("../middlewares/authJwt");
 router.use(verifyToken);
 
 router.route("/:channelId").get(getMessages);
-router.route("/").post(createMessage);
+// router.route("/").post(createMessage);
 
 module.exports = router;
