@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const logger = require("morgan");
 
 const app = express();
+
 app.use(logger("dev"));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
@@ -17,10 +18,12 @@ const { Server } = require("socket.io");
 const { connectDb } = require("./db");
 connectDb();
 
+// socket middlewares and libs
 const {
   createMessageSocket,
   getMessagesSocket,
 } = require("./controllers/messageController");
+const { verifyTokenIO } = require("./middlewares/authJwt");
 
 const io = new Server(server, {
   cors: {
@@ -28,12 +31,13 @@ const io = new Server(server, {
   },
 });
 
+io.use(verifyTokenIO);
+
 io.on("connection", (socket) => {
-  console.log("user connected");
+  console.log("User connected");
 
   socket.on("send_message", async (messageData) => {
-    console.log("send message");
-    await createMessageSocket(messageData);
+    await createMessageSocket(messageData, socket);
     socket.emit("message_created");
     socket.broadcast.emit("message_created");
   });
@@ -44,7 +48,7 @@ io.on("connection", (socket) => {
   });
 
   socket.on("disconnect", () => {
-    console.log("A user disconnected");
+    console.log("User disconnected");
   });
 });
 

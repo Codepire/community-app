@@ -1,7 +1,6 @@
 const { Message } = require("../models/message.model");
 const { Channel } = require("../models/channel.model");
 const { default: mongoose } = require("mongoose");
-const { verifyTokenIO } = require("../lib/authJwt.socket");
 
 module.exports.getMessagesSocket = async (channelId) => {
   try {
@@ -13,39 +12,31 @@ module.exports.getMessagesSocket = async (channelId) => {
   }
 };
 
-module.exports.createMessageSocket = async (messageData) => {
-  const { message, channelId, jwtToken } = messageData;
+module.exports.createMessageSocket = async (messageData, socket) => {
+  const { message, channelId } = messageData;
 
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
     const channel = await Channel.findById(channelId).session(session);
-
     if (channel && message) {
-      const decode = await verifyTokenIO(jwtToken);
-      if (decode) {
-        const newMessage = new Message({
-          message: message,
-          createdAt: new Date().getDate(),
-          authorId: decode.id,
-          channelId: channelId,
-        });
+      const newMessage = new Message({
+        message: message,
+        createdAt: new Date().getDate(),
+        authorId: socket.userId,
+        channelId: channelId,
+      });
+      await newMessage.save({ session: session });
 
-        await newMessage.save({ session: session });
+      channel.messagesId.push(newMessage._id);
+      await channel.save({ session: session });
 
-        channel.messagesId.push(newMessage._id);
-        await channel.save({ session: session });
-
-        await session.commitTransaction();
-      } else {
-        throw new Error(
-          "You are not authorized, please first Register or Login!"
-        );
-      }
+      await session.commitTransaction();
     } else {
       throw new Error("Channel or Message undefined!");
     }
   } catch (err) {
+    console.log(err);
     await session.abortTransaction();
   } finally {
     session.endSession();
