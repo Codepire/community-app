@@ -3,26 +3,22 @@ const { Channel } = require("../models/channel.model");
 const { default: mongoose } = require("mongoose");
 const { verifyTokenIO } = require("../lib/authJwt.socket");
 
-module.exports.getMessages = async (req, res) => {
+module.exports.getMessagesSocket = async (channelId) => {
   try {
-    const { channelId } = req.params;
     const messages = await Message.find({ channelId: channelId });
-    res.status(200).json({ response: messages });
-  } catch (err) {
-    res.send({
-      response: "Some error occurred while retriving messages.",
-      err: err,
-    });
+    return messages;
+  } catch (error) {
+    console.error("Error fetching messages:", error);
+    throw error;
   }
 };
 
-module.exports.createMessage = async (messageData) => {
+module.exports.createMessageSocket = async (messageData) => {
   const { message, channelId, jwtToken } = messageData;
 
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
-
     const channel = await Channel.findById(channelId).session(session);
 
     if (channel && message) {
