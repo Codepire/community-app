@@ -1,6 +1,7 @@
 const { Message } = require("../models/message.model");
 const { Channel } = require("../models/channel.model");
 const { default: mongoose } = require("mongoose");
+let cryptoJs = require("crypto-js");
 
 module.exports.getMessagesSocket = async (channelId) => {
   try {
@@ -20,8 +21,12 @@ module.exports.createMessageSocket = async (messageData, socket) => {
     session.startTransaction();
     const channel = await Channel.findById(channelId).session(session);
     if (channel && message) {
+      const encryptedMessage = cryptoJs.AES.encrypt(
+        message,
+        process.env.AES_KEY
+      ).toString();
       const newMessage = new Message({
-        message: message,
+        message: encryptedMessage,
         createdAt: new Date().getDate(),
         authorId: socket.userId,
         channelId: channelId,
